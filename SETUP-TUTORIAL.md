@@ -182,6 +182,18 @@ Each category tab displays a **DataGridView** (spreadsheet-like table) with the 
 
 When a category has no saved configuration, the rotation auto-populates it with **seed defaults** — a recommended spell order and condition set for your spec. These seeds are curated per class and specialization. You can freely modify them afterward.
 
+Once you change a profile, those edits are now the saved version of that profile. The rotation does **not** automatically re-seed that category every time you open the HMI.
+
+### Getting the Default Seeds Back
+
+If you want the shipped defaults again after editing something, use one of these options:
+
+1. **Load a clean profile** if you still have one that was never edited (for example an untouched `Default` profile).
+2. **Use General → Reset to Defaults** if you want to wipe the current setup and rebuild it from the current default seeds.
+3. **Save or export your current setup first** if you may want to go back to it later, then reset/load the defaults.
+
+> **Important:** Seed defaults only auto-populate empty configuration. If you want the newest default lines back, you must load a clean profile or reset the current one.
+
 ---
 
 ## 7. The Condition System
@@ -359,6 +371,14 @@ Each profile folder contains:
 5. Click **Save As New** → name it "Raid Build".
 6. Now you can **Load** either profile at any time to switch configurations instantly.
 
+### How to Return to Defaults Later
+
+If you already changed a profile and want the original seeded setup again:
+
+1. Click **Save As New** first if you want to keep your current edited version.
+2. Load a clean defaults-based profile if you still have one.
+3. If every profile has already been edited, use **Reset to Defaults** on the General tab to rebuild the current setup from the shipped defaults.
+
 ---
 
 ## 10. In-Game Slash Commands
@@ -439,6 +459,7 @@ Fall through to addon-recommended spell
 - **Create profiles for different content:** one for Mythic+, one for Raid, one for PvP.
 - **Export before making big changes** — you can always import the backup.
 - **The "Default" profile cannot be deleted** — it serves as your fallback.
+- **If you want to test changes safely, use Save As New first** so you always have a clean defaults-based profile to load later.
 
 ### Major Cooldowns
 
