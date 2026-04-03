@@ -565,8 +565,10 @@ These always return `true` but set up targeting for the spell:
 | `HasSnareDebuff(unit)` | Unit has a snare effect |
 | `HasPet` | Player has a living pet |
 | `HasDeadPet` | Player has a dead pet |
-| `BossModAlarm` | DBM/BigWigs alarm is active |
-| `BossModAlarmTank` | Role-specific boss alarm |
+| `BossCast` | DBM/BigWigs alarm is active |
+| `BossCastTankbuster` | Boss is casting a tankbuster |
+| `BossCastTankSwap` | Boss is casting a tank-swap mechanic |
+| `BossCastDanger` | Any dangerous boss cast active |
 | `ItemCooldown(SLOT) == 0` | Trinket/item ready (13=Trinket1, 14=Trinket2) |
 
 ---
