@@ -4,7 +4,7 @@
 
 The **HMI** (Human–Machine Interface) is a configuration window that opens alongside your rotation — think of it like **Hekili**, but with full control over every spell, condition, and priority. Where Hekili shows you *what* to press next, the Legendary HMI lets you define *how* the rotation decides what to press, with a familiar grid-based editor for spell priorities, conditions, cooldown management, timing delays, and profiles.
 
-> **Auto-Close Behavior:** The HMI automatically closes itself if no rotation tick has fired for **60 seconds** (e.g., you stopped the bot, logged out, or disconnected). This is normal — it saves your config before closing. Just restart the rotation in Inferno to reopen it.
+> **Auto-Close Behavior:** By default, the HMI automatically closes itself if no rotation tick has fired for **60 seconds** (e.g., you stopped the bot, logged out, or disconnected). This is normal — it saves your config before closing. You can disable this via the **"Close HMI after 1 minute out of game"** checkbox on the General tab.
 
 ---
 
@@ -41,7 +41,7 @@ The **HMI** (Human–Machine Interface) is a configuration window that opens alo
 4. Type `/reload` in the game chat. This loads the bot's internal macros and keybinds automatically.
 5. The **HMI window** opens automatically once the rotation initializes.
 
-> **Important:** The bot reserves `Numpad 0-9`, `F1-F12`, `[`, and `]` keys internally. Do **not** bind those to anything in WoW. If "ExtraKeys" is enabled, `0-9`, `L`, `P`, `O`, and `K` are also reserved.
+> **Important:** The bot reserves `Numpad 0-9`, `F1-F12`, `[`, and `]` keys internally. Do **not** bind those to anything in WoW.
 
 ### Spellbook Limit
 
@@ -64,10 +64,10 @@ The HMI opens as a resizable WinForms window (default 900×700 pixels, minimum 6
 
 ### Footer Bar
 
-At the bottom of the window you'll find two indicators:
+At the bottom of the **General tab** you'll find:
 
-- **Cooldown Status** — Shows `Cooldowns: ON` (green) or `Cooldowns: OFF` (red), reflecting the in-game SaveCDs toggle state.
 - **Pause Button** — Shows `▶ ROTATION ACTIVE` (green) or `⏸ ROTATION PAUSED` (red). Click to pause/resume.
+- **Cooldown Status** — Shows `Cooldowns: ON` (green) or `Cooldowns: OFF` (red), reflecting the in-game SaveCDs toggle state.
 
 ---
 
@@ -78,9 +78,10 @@ The General tab controls how the rotation behaves at a high level.
 | Setting | Description | Default |
 |---------|-------------|---------|
 | **Use Assisted Highlight Priority** | When enabled, the rotation only handles non-damage tasks (kicks, defensives, dispels, items, healing, utility, major CDs). Damage spells are left to your WeakAura/addon highlight. When disabled, the rotation runs everything in full-auto mode. | Off |
-| **Enable Auto Target** | Automatically switches to a nearby enemy target if your current target dies or is invalid. | Off |
+| **Enable Auto Target** | Automatically switches to a nearby enemy target if your current target dies or is invalid. | On |
 | **Start Combat from Out of Combat** | Allows the rotation to fire abilities and start combat when you are out of combat (e.g., pulling). | Off |
 | **HMI Top Most** | Keeps the HMI window on top of all other windows. | Off |
+| **Close HMI after 1 minute out of game** | Automatically closes the HMI window if no rotation tick has fired for 60 seconds (e.g., you stopped the bot). Config is saved before closing. | On |
 | **Major CD – Target Time To Die (s)** | If the target is estimated to die within this many seconds, major cooldowns are skipped to avoid waste. Set to `0` to disable. Range: 0–60. | 10 |
 | **Reset to Defaults** | Resets ALL settings (general, timing, and rotation lines) back to factory defaults. Requires confirmation. | — |
 
@@ -94,17 +95,18 @@ The Timing tab controls how quickly the bot reacts. Adjusting these values adds 
 
 | Setting | Description | Range | Default |
 |---------|-------------|-------|---------|
-| **Cast Delay Min (ms)** | Minimum delay before casting the next spell. | 0–5000 | Varies |
-| **Cast Delay Max (ms)** | Maximum delay before casting the next spell. | 0–5000 | Varies |
+| **Enable Cast Delay** | Master toggle for the cast delay system. When **unchecked**, spells fire immediately with no artificial delay. Reset-to-Defaults turns this **On**. | — | Off |
+| **Cast Delay Min (ms)** | Minimum delay before casting the next spell. | 0–5000 | 10 |
+| **Cast Delay Max (ms)** | Maximum delay before casting the next spell. | 0–5000 | 50 |
 | **Randomize Cast Delay** | When checked, the delay is randomized between Min and Max each cast. When unchecked, Min is always used. | — | On |
 
 ### Kick Delay
 
 | Setting | Description | Range | Default |
 |---------|-------------|-------|---------|
-| **Kick Delay Min (ms)** | Minimum delay before interrupting an enemy cast. | 0–5000 | Varies |
-| **Kick Delay Max (ms)** | Maximum delay before interrupting an enemy cast. | 0–5000 | Varies |
-| **Randomize Kick Delay** | When checked, the kick delay is randomized between Min and Max. | — | On |
+| **Kick Delay Min (ms)** | Minimum delay before interrupting an enemy cast. | 0–5000 | 0 |
+| **Kick Delay Max (ms)** | Maximum delay before interrupting an enemy cast. | 0–5000 | 200 |
+| **Randomize Kick Delay** | When checked, the kick delay is randomized between Min and Max. | — | Off |
 
 > **Tip:** Higher delays look more human but may cause you to miss short casts. A good starting point is 100–400ms for casts and 200–600ms for kicks.
 
@@ -121,11 +123,12 @@ The **Rotation** tab is where the real customization happens. It contains multip
 | **OOC** | Out-of-Combat actions (buffs, food, mount-up macros) |
 | **Kicks** | Interrupt spells (e.g., Counterspell, Pummel, Spell Lock) |
 | **Defensives** | Defensive cooldowns (e.g., Unending Resolve, Dark Pact) |
-| **Items** | Trinkets and consumables (TopTrinket, BottomTrinket, Item1–Item5) |
+| **Items** | Trinkets, weapon, and consumables (TopTrinket, BottomTrinket, UseWeapon, Item1–Item5) |
 | **Dispels** | Dispel/cleanse abilities |
 | **Racials** | Racial abilities (Blood Fury, Berserking, etc.) |
 | **Healing** | Healing spells (primarily for healer specs) |
 | **Utility** | Utility spells (movement, crowd control) |
+| **PvP** | PvP-specific abilities (class-specific — only present for some classes) |
 | **Damage_Opener** | Opener/burst sequence (executed first in combat) |
 | **Damage_SingleTarget** | Single-target damage rotation |
 | **Damage_AoE** | AoE damage rotation (activated when enemy count ≥ AoE threshold) |
@@ -137,6 +140,10 @@ Some categories have extra controls at the top of their tab:
 - **Damage_AoE Tab:**
   - `AoE Threshold` (1–10) — Minimum number of enemies required to switch to AoE rotation.
   - `Use EnemiesInRange` checkbox — When checked, counts enemies at 40 yards instead of melee (8 yards).
+
+- **Items Tab:**
+  - Trinket macros (`TopTrinket`, `BottomTrinket`) and weapon macro (`UseWeapon`) target equipment slots 13, 14, and 16 respectively.
+  - Certain trinkets are engine-blacklisted (e.g., Radiant Plume, Umbral Plume) and will never be used on-use, even if conditions are met.
 
 - **Kicks Tab:**
   - `Kick Cast Remaining (ms)` (100–5000) — Only interrupt when the enemy cast has this much time left.
@@ -391,6 +398,25 @@ All slash commands start with the **first 5 lowercase letters of your addon name
 | `/legen wait #` | Pause the rotation for `#` seconds, then auto-resume. Example: `/legen wait 3` |
 | `/legen SaveCDs` | Toggle major cooldowns on/off. |
 | `/legen SaveCDs #` | Toggle SaveCDs on, auto-disable after `#` seconds. |
+| `/legen SaveAOE` | Toggle AoE routing on/off. When **on**, the rotation forces single-target even when AoE threshold is met. |
+
+### Spell Queue — `/lq`
+
+The rotation includes a built-in spell queue system for on-demand spell casting.
+
+```
+/lq <target> <SpellName>
+```
+
+| Target | Description |
+|--------|-------------|
+| `focus` | Cast on your focus target |
+| `mouseover` | Cast on your mouseover target |
+| `cursor` | Place ground-targeted ability at your cursor |
+
+**Example:** `/lq focus Misdirection` queues Misdirection to be cast on your focus target on the next available tick.
+
+Available queue spells are class-specific — each rotation registers its own set of queueable abilities (e.g., interrupts on focus, ground-targeted traps at cursor, utility on mouseover).
 
 ---
 
@@ -501,8 +527,10 @@ Fall through to addon-recommended spell
 |-----------|-------------|
 | `SpellCooldown(Name) > 10000` | Spell cooldown remaining in ms |
 | `SpellCharges(Name) >= 2` | Current charges for charge-based spells |
+| `ChargesFractional(Name,VALUE) >= 1.5` | Fractional charges (e.g. 1.7). VALUE = recharge duration in ms from Wowhead |
 | `CanCast(Name,unit,ignoreGCD)` | Full cast check (range, resources, GCD) |
 | `IsSpellKnown(SpellID)` | Talent/spell is learned |
+| `SpellInRange(Name,unit)` | True if the spell is in range of the unit |
 | `CastingID(unit) == 12345` | Specific spell being cast by unit |
 | `CastingRemaining(unit) <= 800` | Cast time remaining in ms |
 | `IsChanneling(unit)` | Unit is channeling |
@@ -518,6 +546,8 @@ Fall through to addon-recommended spell
 | `IsLusted()` | Bloodlust/Heroism is active or sated |
 | `TargetIsEnemy` | Target can be attacked |
 | `IsPlayerMoving` | Player is currently moving |
+| `IsMovingFor(VALUE)` | True when player has been moving for at least VALUE ms |
+| `HealthDropRate(unit) >= 10` | HP% lost per second for the unit (requires a few seconds of tracking) |
 
 ### Enemy & Ally Counts
 
@@ -569,7 +599,8 @@ These always return `true` but set up targeting for the spell:
 | `BossCastTankbuster` | Boss is casting a tankbuster |
 | `BossCastTankSwap` | Boss is casting a tank-swap mechanic |
 | `BossCastDanger` | Any dangerous boss cast active |
-| `ItemCooldown(SLOT) == 0` | Trinket/item ready (13=Trinket1, 14=Trinket2) |
+| `ItemCooldown(SLOT) == 0` | Trinket/item ready (13=Trinket1, 14=Trinket2, 16=Weapon) |
+| `CanUseItem(SLOT)` | True if an inventory item slot is usable (has an active on-use ability and is off cooldown) |
 
 ---
 
@@ -591,4 +622,4 @@ These always return `true` but set up targeting for the spell:
 
 ---
 
-*Last updated: March 2026*
+*Last updated: June 2025*
