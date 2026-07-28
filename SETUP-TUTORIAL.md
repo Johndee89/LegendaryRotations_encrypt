@@ -102,13 +102,26 @@ The Timing tab controls how quickly the bot reacts. Adjusting these values adds 
 
 ### Kick Delay
 
+Kick Delay does **not** pause the rotation. It shifts the *interrupt threshold* your Kicks lines
+are gated on (`CastingRemaining` / `ChannelElapsed`), so the interrupt lands at a different point
+inside each enemy cast instead of always at the exact same millisecond.
+
 | Setting | Description | Range | Default |
 |---------|-------------|-------|---------|
-| **Kick Delay Min (ms)** | Minimum delay before interrupting an enemy cast. | 0–5000 | 0 |
-| **Kick Delay Max (ms)** | Maximum delay before interrupting an enemy cast. | 0–5000 | 200 |
-| **Randomize Kick Delay** | When checked, the kick delay is randomized between Min and Max. | — | Off |
+| **Kick Delay Min (ms)** | Lower bound of the random offset magnitude. | 0–5000 | 0 |
+| **Kick Delay Max (ms)** | Upper bound of the random offset magnitude. `0` turns Kick Delay off. | 0–5000 | 200 |
+| **Randomize Kick Delay** | When checked, the offset is `± RANDOM(Min…Max)` — the kick can land **earlier or later** than your configured threshold. When unchecked, the offset is a fixed `+Max`, i.e. always that much later. | — | Off |
 
-> **Tip:** Higher delays look more human but may cause you to miss short casts. A good starting point is 100–400ms for casts and 200–600ms for kicks.
+The offset is rolled **once per enemy cast** and held for that cast, so it cannot flicker between
+rotation ticks. Because it only moves a threshold, it never costs reaction time.
+
+Worked example — a Kicks line gated on `CastingRemaining(target) <= 800`, with Min 0 / Max 200 and
+Randomize on: each enemy cast gets an offset somewhere in −200…+200, so the interrupt actually
+fires anywhere between `<= 600` (200ms later into the cast) and `<= 1000` (200ms earlier).
+
+> **Tip:** Keep Max comfortably below your threshold. With `CastingRemaining <= 800`, a Max above
+> ~700 can push the effective threshold near zero and let short casts finish. 100–300ms is a safe
+> range. For **Cast Delay** (which does sleep), 100–400ms is a good starting point.
 
 ---
 
@@ -151,6 +164,9 @@ Some categories have extra controls at the top of their tab:
 
 - **Dispels Tab:**
   - Six type checkboxes: `Magic`, `Poison`, `Disease`, `Curse`, `Bleed`, `Snare` — Toggle which debuff types to auto-dispel.
+  - Two dispel paths are seeded by default for healers/dispel-capable specs:
+    1. **Mouseover dispel** (highest priority) — hover any friendly unit and the dispel fires on them. **Bypasses the auto-dispel blacklist**, so you can still manually remove mechanic-critical debuffs (e.g. AA Vexamus *Mana Bomb* `386181`, AA Echo of Doragosa *Energy Bomb* `374350`).
+    2. **Auto group dispel** — scans party/raid for dispellable debuffs and casts on the affected member. **Skips blacklisted spell IDs** to avoid wipe loops (e.g. dispelling Mana Bomb spawns a Corrupted Mana puddle).
 
 ### Enable Checkbox
 
@@ -443,11 +459,34 @@ When **"Use Assisted Highlight Priority"** is **checked**:
 
 ### Execution Priority (Full Auto)
 
+Each tick runs two passes. The **supportive pass** goes first and deliberately runs even when you
+have no enemy target, so a healer can keep healing while targeting a friendly unit:
+
 ```
-Healing → Dispels → Defensives → OOC (if enabled) →
-Items → Kicks → Racials → Utility →
+Defensives → Items → Kicks → Dispels → Healing
+```
+
+If nothing fired there, the **main pass** runs:
+
+```
+Defensives → Items → Kicks → Dispels → Racials → Healing → Utility →
 Damage_Opener → Damage_SingleTarget OR Damage_AoE
 ```
+
+Two things change this order:
+
+- **Inside an Arena / rated PvP instance**, the `PvP` tab replaces the Dispels slot and becomes the
+  **last** category — there is no fall-through into the damage tabs:
+  ```
+  Defensives → Items → Kicks → Racials → PvP → Healing → Utility
+  ```
+  The PvE damage tabs are skipped on purpose: they contain no Arena-safe targeting, so letting them
+  run was causing erratic target behaviour.
+- **Healers with the group below 65% health** skip `Damage_Opener` and the damage tabs entirely, so
+  a GCD is never spent on damage while someone is in danger.
+
+Within a category, lines run by ascending **Spell Order**; the first castable line whose condition is
+true fires, and the engine then stops for that tick.
 
 ### Execution Priority (Assisted Highlight)
 
@@ -590,6 +629,11 @@ These always return `true` but set up targeting for the spell:
 |-----------|-------------|
 | `MajorCooldowns` | Returns `true` when SaveCDs is OFF |
 | `HasDispellableDebuff(unit)` | Unit has a dispellable debuff |
+| `HasDispellableDebuff(unit,Magic,Curse)` | Restrict to specific dispel types (any of: `Magic`, `Poison`, `Disease`, `Curse`, `Bleed`, `Snare`) |
+| `GroupUnitHasDispellableDebuff` | Any group member has a dispellable debuff. Auto-skips blacklisted IDs (Mana Bomb 386181, Energy Bomb 374350). Sets PendingFocusUnit to the affected ally. |
+| `GroupUnitHasDispellableDebuff(Magic,Curse)` | Same as above, restricted to specific types. |
+| `MouseoverHasDispellableDebuff` | Mouseover unit has a dispellable debuff. **Includes blacklisted IDs** — use to manually hover-dispel mechanic-critical debuffs. Sets PendingFocusUnit to mouseover. |
+| `MouseoverHasDispellableDebuff(Magic,Curse)` | Same as above, restricted to specific types. |
 | `HasPurgeableBuff(unit)` | Unit has a purgeable buff |
 | `HasEnrageBuff(unit)` | Unit has an enrage effect |
 | `HasSnareDebuff(unit)` | Unit has a snare effect |
