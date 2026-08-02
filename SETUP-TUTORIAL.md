@@ -19,10 +19,11 @@ The **HMI** (Human–Machine Interface) is a configuration window that opens alo
 7. [The Condition System](#7-the-condition-system)
 8. [Major Cooldowns & SaveCDs Toggle](#8-major-cooldowns--savecds-toggle)
 9. [Profiles — Save, Load, Export & Import](#9-profiles--save-load-export--import)
-10. [In-Game Slash Commands](#10-in-game-slash-commands)
-11. [Assisted Highlight Mode vs Full Auto](#11-assisted-highlight-mode-vs-full-auto)
-12. [Tips & Best Practices](#12-tips--best-practices)
-13. [Condition Reference Sheet](#13-condition-reference-sheet)
+10. [Spell Lists — Correcting the Built-in ID Lists](#10-spell-lists--correcting-the-built-in-id-lists)
+11. [In-Game Slash Commands](#11-in-game-slash-commands)
+12. [Assisted Highlight Mode vs Full Auto](#12-assisted-highlight-mode-vs-full-auto)
+13. [Tips & Best Practices](#13-tips--best-practices)
+14. [Condition Reference Sheet](#14-condition-reference-sheet)
 
 ---
 
@@ -60,6 +61,7 @@ The HMI opens as a resizable WinForms window (default 900×700 pixels, minimum 6
 | **General** | Global rotation settings (mode, targeting, cooldown threshold) |
 | **Timing** | Cast and kick delay configuration with randomization |
 | **Rotation** | The main tab — contains all spell categories as sub-tabs |
+| **Spell Lists** | View and correct the built-in spell ID lists (dispels, purges, boss casts) |
 | **Profiles** | Save, load, delete, export, and import rotation profiles |
 
 ### Footer Bar
@@ -95,7 +97,7 @@ The Timing tab controls how quickly the bot reacts. Adjusting these values adds 
 
 | Setting | Description | Range | Default |
 |---------|-------------|-------|---------|
-| **Enable Cast Delay** | Master toggle for the cast delay system. When **unchecked**, spells fire immediately with no artificial delay. Reset-to-Defaults turns this **On**. | — | Off |
+| **Enable Cast Delay** | Master toggle for the cast delay system. When **unchecked**, spells fire immediately with no artificial delay. Off by default, and Reset-to-Defaults leaves it off — the delay sleeps before each cast, which reads as the rotation stalling. Turn it on only if you want the humanization. | — | Off |
 | **Cast Delay Min (ms)** | Minimum delay before casting the next spell. | 0–5000 | 10 |
 | **Cast Delay Max (ms)** | Maximum delay before casting the next spell. | 0–5000 | 50 |
 | **Randomize Cast Delay** | When checked, the delay is randomized between Min and Max each cast. When unchecked, Min is always used. | — | On |
@@ -404,7 +406,58 @@ If you already changed a profile and want the original seeded setup again:
 
 ---
 
-## 10. In-Game Slash Commands
+## 10. Spell Lists — Correcting the Built-in ID Lists
+
+Some of what the rotation does is not driven by the spell grid at all, but by lists of
+spell IDs baked into the file. `HasPurgeableBuff(target)` is true because the target's
+buff is in the **PurgeableBuffs** list. `BossCastTankbuster` is true because the boss is
+casting something in the **BossCastTankbuster** list. When one of those lists has a wrong
+entry the symptom is quiet and confusing: a Purge that strips nothing, a cleanse that
+never lands, a raid cooldown fired at the wrong moment.
+
+The **Spell Lists** tab shows those lists and lets you correct them yourself.
+
+### Using the tab
+
+1. Pick a list from the dropdown. The description under it tells you what the list drives and what the entries have to satisfy.
+2. The table shows every ID currently in effect, marked **built-in** (shipped by us) or **added by you**.
+3. **Add ID** — type a spell ID and add it.
+4. **Remove Selected** — select a row and remove it.
+5. **Reset This List** — discards your changes to that one list. Other lists keep theirs.
+
+Changes take effect immediately. There is no Save button and no reload.
+
+### What actually gets saved
+
+Only your **additions and removals** — never a copy of the whole list. That matters: if a
+full copy were saved, your list would be frozen at whatever shipped the day you first
+opened this tab, and every later correction from us would silently stop reaching you. With
+a delta, our updates keep landing and your own changes ride on top.
+
+Two consequences worth knowing:
+
+- **Your edits are shared across every class, spec and profile.** They live in a single file, `Legendary_HMI_Profiles/spell-lists.json`, next to the profile folders rather than inside one. The lists are the same in all rotations, so a correction is made once and applies everywhere.
+- **Reset to Defaults does not clear them.** That button rebuilds the spell grid. To undo spell-list edits use **Reset This List**, or delete `spell-lists.json`.
+
+### Before you add an ID
+
+An ID that does not belong simply never matches — it costs nothing but does nothing either.
+The lists that can actually misbehave have a requirement worth checking on Wowhead first:
+
+| List | Requirement |
+|------|-------------|
+| **PurgeableBuffs** | The aura's **Dispel type must be Magic**. Purge, Spellsteal and Dispel Magic cannot remove anything else, so a non-Magic entry makes the rotation spend a global on nothing. |
+| **BossCast…** (all four) | The spell must have a **cast bar or be channelled** — these are read from the boss's cast, so anything listed as *Instant* can never match. Never add a spell shown as **"Channeled (7 days cast)"**: it stays active for the whole fight and pins the condition to true permanently. |
+| **OffGcdSpellIds** | Wowhead must show **GCD category: n/a**. An entry that is not genuinely off the global cooldown will be attempted during the GCD and simply fail. |
+| **BlacklistedTrinkets** | **Item IDs**, not spell IDs. |
+
+A dispel type from a tooltip is necessary but not always sufficient — a debuff can be
+tagged `Disease` and still refuse to come off in practice. If a cleanse seems to loop on
+one specific debuff, removing that ID here is the right fix.
+
+---
+
+## 11. In-Game Slash Commands
 
 All slash commands start with the **first 5 lowercase letters of your addon name**. For example, if your addon is `LegendaryWarlock`, the prefix is `/legen`.
 
@@ -436,7 +489,7 @@ Available queue spells are class-specific — each rotation registers its own se
 
 ---
 
-## 11. Assisted Highlight Mode vs Full Auto
+## 12. Assisted Highlight Mode vs Full Auto
 
 The rotation supports two fundamental modes:
 
@@ -498,7 +551,7 @@ Fall through to addon-recommended spell
 
 ---
 
-## 12. Tips & Best Practices
+## 13. Tips & Best Practices
 
 ### Getting Started
 
@@ -534,7 +587,7 @@ Fall through to addon-recommended spell
 
 ---
 
-## 13. Condition Reference Sheet
+## 14. Condition Reference Sheet
 
 ### Health & Resources
 
@@ -639,10 +692,20 @@ These always return `true` but set up targeting for the spell:
 | `HasSnareDebuff(unit)` | Unit has a snare effect |
 | `HasPet` | Player has a living pet |
 | `HasDeadPet` | Player has a dead pet |
-| `BossCast` | DBM/BigWigs alarm is active |
 | `BossCastTankbuster` | Boss is casting a tankbuster |
 | `BossCastTankSwap` | Boss is casting a tank-swap mechanic |
 | `BossCastDanger` | Any dangerous boss cast active |
+| `BossCastDefensive` | Boss is casting a raid-damage spell — use a personal defensive |
+| `BossCastHealerCD` | Boss is casting a raid-damage spell — healer cooldown window |
+| `BossCastInterruptPriority` | Boss is casting a high-priority must-interrupt spell (kick these first) |
+| `BossCastSpell(SPELLID)` | Boss is casting one specific spell ID |
+| `BossTimerRemaining <= 3500` | Milliseconds until the next boss timer fires |
+
+> The `BossCast…` conditions read the boss's **cast bar** directly — they are true only
+> while something is visibly being cast or channelled, and need no addon.
+> `BossTimerRemaining` is the opposite: it reads the **timers from BigWigs or DBM**, so it
+> can see a mechanic *before* it starts. Without one of those addons installed it is never
+> true, whatever operator you use — the rotation then behaves exactly as it does today.
 | `ItemCooldown(SLOT) == 0` | Trinket/item ready (13=Trinket1, 14=Trinket2, 16=Weapon) |
 | `CanUseItem(SLOT)` | True if an inventory item slot is usable (has an active on-use ability and is off cooldown) |
 
