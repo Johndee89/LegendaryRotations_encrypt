@@ -470,6 +470,21 @@ All slash commands start with the **first 5 lowercase letters of your addon name
 | `/legen SaveCDs #` | Toggle SaveCDs on, auto-disable after `#` seconds. |
 | `/legen SaveAOE` | Toggle AoE routing on/off. When **on**, the rotation forces single-target even when AoE threshold is met. |
 
+### The In-Game LEGENDARY Window
+
+The rotation draws a small window in-game with **Rotation**, **AoE** and **CDs** buttons, so you can flip those without alt-tabbing to the HMI. Drag it by its body to move it; the position is remembered between sessions.
+
+Unlike the commands above, these use the literal prefix `/legendary` — they belong to the window, not to a specific rotation.
+
+| Command | Description |
+|---------|-------------|
+| `/legendary hide` | Hide the window. |
+| `/legendary show` | Show it again. |
+| `/legendary toggle` | Hide if shown, show if hidden. |
+| `/legendary reset` | Move it back to the top of the screen and unhide it. |
+
+**If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
+
 ### Spell Queue — `/lq`
 
 The rotation includes a built-in spell queue system for on-demand spell casting.
@@ -640,7 +655,9 @@ Fall through to addon-recommended spell
 | `TargetIsEnemy` | Target can be attacked |
 | `IsPlayerMoving` | Player is currently moving |
 | `IsMovingFor(VALUE)` | True when player has been moving for at least VALUE ms |
-| `HealthDropRate(unit) >= 10` | HP% lost per second for the unit (requires a few seconds of tracking) |
+| `HealthDropRate(unit) >= 10` | HP% lost per second for the unit (requires a few seconds of tracking). Works on any group member, not just you and your target |
+| `PredictedHealth(unit,1500) <= 50` | Where the unit is *heading*: its health in 1500 ms, from its current health and how fast it is dropping. A unit that is not losing health projects to where it already is |
+| `GroupHealthDropRate >= 8` | Mean HP% per second the whole group is losing. Accepts a negative number, so `<= -5` means "the group is recovering" |
 
 ### Enemy & Ally Counts
 
@@ -660,6 +677,7 @@ Fall through to addon-recommended spell
 | `GroupSize() >= 5` | Number of group members |
 | `GroupLowestHealth(80)` | Finds & focuses lowest HP member below threshold |
 | `GroupHealthCount(85,3,Spell)` | True when 3+ members within 40 yards are at or below 85% health. `GroupMeanHealthCheck` is the same condition under its original name |
+| `GroupPredictedHealthCount(75,3,1500)` | True when 3+ members are *projected* to be at or below 75% within 1500 ms. Focuses the one heading lowest — append `ClearFocus()` if the line should not move your focus |
 | `GroupBuffCount(BuffID) >= 5` | Count members with specific buff |
 | `GroupBuffMissing(Buff,40)` | Find a member within 40 yards missing a buff. The second argument is a yard range |
 | `FocusLowestMana(80)` | Focus lowest mana member |
@@ -686,6 +704,7 @@ These always return `true` but set up targeting for the spell:
 | `HasDispellableDebuff(unit,Magic,Curse)` | Restrict to specific dispel types (any of: `Magic`, `Poison`, `Disease`, `Curse`, `Bleed`, `Snare`) |
 | `GroupUnitHasDispellableDebuff` | Any group member has a dispellable debuff. Auto-skips blacklisted IDs (Mana Bomb 386181, Energy Bomb 374350). Sets PendingFocusUnit to the affected ally. |
 | `GroupUnitHasDispellableDebuff(Magic,Curse)` | Same as above, restricted to specific types. |
+| `GroupDispellableCount(Poison) >= 2` | How MANY group members carry a debuff your class can remove. Use this for area cleanses that land at your own feet (e.g. Poison Cleansing Totem), where one affected player is not worth the cooldown. Sets no focus. |
 | `MouseoverHasDispellableDebuff` | Mouseover unit has a dispellable debuff. **Includes blacklisted IDs** — use to manually hover-dispel mechanic-critical debuffs. Sets PendingFocusUnit to mouseover. |
 | `MouseoverHasDispellableDebuff(Magic,Curse)` | Same as above, restricted to specific types. |
 | `HasPurgeableBuff(unit)` | Unit has a purgeable buff |
