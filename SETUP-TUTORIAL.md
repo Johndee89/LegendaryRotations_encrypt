@@ -278,8 +278,9 @@ CombatTime < 8000
 # Boss only: Cast only on bosses
 IsBoss(target)
 
-# Group healing: Cast when group average health drops
-GroupMeanHealthCheck(85, 3, HealingSpell)
+# Group healing: cast once 3 or more members are at or below 85% health
+# (GroupHealthCount is the same condition under a name that says so)
+GroupHealthCount(85, 3, HealingSpell)
 
 # Target lowest HP party member and then heal
 GroupLowestHealth(80)
@@ -658,9 +659,9 @@ Fall through to addon-recommended spell
 | `InRaid()` | In a raid |
 | `GroupSize() >= 5` | Number of group members |
 | `GroupLowestHealth(80)` | Finds & focuses lowest HP member below threshold |
-| `GroupMeanHealthCheck(85,3,Spell)` | Average group HP check within the Spellrange of Spell |
+| `GroupHealthCount(85,3,Spell)` | True when 3+ members within 40 yards are at or below 85% health. `GroupMeanHealthCheck` is the same condition under its original name |
 | `GroupBuffCount(BuffID) >= 5` | Count members with specific buff |
-| `GroupBuffMissing(Buff,Spell)` | Find member missing a buff |
+| `GroupBuffMissing(Buff,40)` | Find a member within 40 yards missing a buff. The second argument is a yard range |
 | `FocusLowestMana(80)` | Focus lowest mana member |
 
 ### Targeting Directives
