@@ -677,7 +677,7 @@ Fall through to addon-recommended spell
 | `GroupSize() >= 5` | Number of group members |
 | `GroupLowestHealth(80)` | Finds & focuses lowest HP member below threshold |
 | `GroupHealthCount(85,3,Spell)` | True when 3+ members within 40 yards are at or below 85% health. `GroupMeanHealthCheck` is the same condition under its original name |
-| `GroupPredictedHealthCount(75,3,1500)` | True when 3+ members are *projected* to be at or below 75% within 1500 ms. Focuses the one heading lowest — append `ClearFocus()` if the line should not move your focus |
+| `GroupPredictedHealthCount(75,3)` | True when 3+ members are *projected* to be at or below 75% shortly (1.5 s). Add a third argument to change that window: `GroupPredictedHealthCount(75,3,2500)`. Focuses the one heading lowest — append `ClearFocus()` if the line should not move your focus |
 | `GroupBuffCount(BuffID) >= 5` | Count members with specific buff |
 | `GroupBuffMissing(Buff,40)` | Find a member within 40 yards missing a buff. The second argument is a yard range |
 | `FocusLowestMana(80)` | Focus lowest mana member |
@@ -704,7 +704,7 @@ These always return `true` but set up targeting for the spell:
 | `HasDispellableDebuff(unit,Magic,Curse)` | Restrict to specific dispel types (any of: `Magic`, `Poison`, `Disease`, `Curse`, `Bleed`, `Snare`) |
 | `GroupUnitHasDispellableDebuff` | Any group member has a dispellable debuff. Auto-skips blacklisted IDs (Mana Bomb 386181, Energy Bomb 374350). Sets PendingFocusUnit to the affected ally. |
 | `GroupUnitHasDispellableDebuff(Magic,Curse)` | Same as above, restricted to specific types. |
-| `GroupDispellableCount(Poison) >= 2` | How MANY group members carry a debuff your class can remove. Use this for area cleanses that land at your own feet (e.g. Poison Cleansing Totem), where one affected player is not worth the cooldown. Sets no focus. |
+| `GroupDispellableCount(Poison) >= 2` | How MANY group members carry a debuff your class can remove. The type is a dropdown in the condition builder: `Magic`, `Poison`, `Disease`, `Curse`, `Bleed`, `Snare`. Use this for area cleanses that land at your own feet (e.g. Poison Cleansing Totem), where one affected player is not worth the cooldown. Sets no focus. |
 | `MouseoverHasDispellableDebuff` | Mouseover unit has a dispellable debuff. **Includes blacklisted IDs** — use to manually hover-dispel mechanic-critical debuffs. Sets PendingFocusUnit to mouseover. |
 | `MouseoverHasDispellableDebuff(Magic,Curse)` | Same as above, restricted to specific types. |
 | `HasPurgeableBuff(unit)` | Unit has a purgeable buff |
