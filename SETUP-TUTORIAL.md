@@ -519,12 +519,24 @@ When **"Use Assisted Highlight Priority"** is **unchecked**:
 
 ### Assisted Highlight Mode
 
-When **"Use Assisted Highlight Priority"** is **checked**:
+When **"Use Assisted Highlight Priority"** is **checked**, the damage filler comes from the game
+itself. WoW's built-in **Assisted Combat** (the Single Button Assistant) highlights the spell it
+would press next; the rotation reads that highlight and **casts it for you** at the end of its own
+priority. You do not press anything.
 
-- The rotation handles: kicks, defensives, dispels, items, racials, healing, utility, and **only Major Cooldowns from damage tabs**.
-- Damage spells (non-CD) are **not** fired by the bot — instead, your WeakAura or addon overlay highlights the recommended spell, and you press it manually.
-- The engine fires Major CDs from `Damage_Opener` and the current damage category, then falls through to the addon's recommended spell.
-- Best for: players who want automation for non-damage tasks but prefer pressing their own damage buttons (looks more natural, feels more interactive).
+- The rotation still handles its own categories first: defensives, items, kicks, dispels,
+  racials, healing, utility — exactly like Full Auto.
+- Then it fires **Major Cooldowns** from `Damage_Opener` and the current damage tab (Ascendance,
+  Stormkeeper and the like), because Assisted Combat does not plan cooldowns.
+- Then it casts whatever Assisted Combat is highlighting. Ground-targeted spells go through the
+  `@cursor` macro automatically.
+- Your own lines in the damage tabs are **not** used in this mode (except the ones marked as
+  Major CD). The game's suggestion replaces them.
+- Requirement: the **Assisted Combat** button must be on one of your action bars — the rotation
+  finds the highlight by scanning them. No button, no filler.
+- Healers: below the group-health threshold the filler is skipped, same as in Full Auto.
+- Best for: playing a class whose damage priority you have not tuned yet, or when a patch changes
+  the rotation faster than the defaults are updated — the game's own priority is always current.
 
 ### Execution Priority (Full Auto)
 
@@ -562,7 +574,7 @@ true fires, and the engine then stops for that tick.
 ```
 Defensives → Items → Kicks → Dispels → Racials → Healing → Utility →
 Major CDs from Damage_Opener → Major CDs from Damage_ST/AoE →
-Fall through to addon-recommended spell
+Cast the spell Assisted Combat is highlighting
 ```
 
 ---
