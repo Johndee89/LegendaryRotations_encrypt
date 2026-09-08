@@ -552,7 +552,7 @@ Unlike the commands above, these use the literal prefix `/legendary` — they be
 | `/legendary show` | Show it again. |
 | `/legendary toggle` | Hide if shown, show if hidden. |
 | `/legendary reset` | Move it back to the top of the screen and unhide it. |
-| `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. The window also follows the bot's own `/<addon> SaveCDs` and `SaveAOE` commands, so the buttons always show the real state. |
+| `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. The buttons show what was clicked or sent through `/legendary`; a `/<addon> SaveCDs` typed by hand is not mirrored, the HMI footer (`Cooldowns: ON/OFF`) is the authoritative readout. |
 | `/legendary aoe` | Same as clicking the **AoE** button: toggles SaveAOE (also accepts `saveaoe`). |
 
 **If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
