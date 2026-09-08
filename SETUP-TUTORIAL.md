@@ -48,6 +48,10 @@ The **HMI** (Human–Machine Interface) is a configuration window that opens alo
 
 The Inferno API has a **50-slot spellbook limit**. The rotation automatically registers your spec's spells, shared spells, and racial spells at startup. If your combined spell count exceeds 50, lower-priority spells may be excluded.
 
+### Macro Limit and Raid Focus Macros
+
+Macros are capped at **87 per spec**. Every `@focus`, `@cursor`, `@player` and `@mouseover` spell the rotation can dispatch costs one slot, and so does every custom line you add with such a directive. The **raid focus macros** (`focusraid1` .. `focusraid30`, the ones that let heals and dispels reach raid members) are registered last and take whatever is left, up to 30. There is no checkbox for them any more; the loader prints `[HMI] Raid focus macros: 30/30` at start, and a lower number tells you the slots ran out (remove custom lines you do not use). Healer specs ship with 3 to 12 slots to spare after the full 30.
+
 ---
 
 ## 2. HMI Window Overview
@@ -158,11 +162,13 @@ Some categories have extra controls at the top of their tab:
 
 - **Items Tab:**
   - Trinket macros (`TopTrinket`, `BottomTrinket`) and weapon macro (`UseWeapon`) target equipment slots 13, 14, and 16 respectively.
+  - A trinket line targets through its **condition**, exactly like a spell. The seeded line (`InCombat(player) AND CanUseItem(13)`) fires on your enemy target; add `AND Placement(@Cursor)` for a ground-targeted trinket, `AND CastOn(player)` for a self-target one, `AND GroupLowestHealth(80)` (or `AND CastOn(tank)`) for a healer trinket that needs a friendly target. The `TopTrinketFocus` / `BottomTrinketFocus` entries are still selectable for old profiles; new lines should use `TopTrinket` plus the condition.
   - Certain trinkets are engine-blacklisted (e.g., Radiant Plume, Umbral Plume) and will never be used on-use, even if conditions are met.
 
 - **Kicks Tab:**
   - `Kick Cast Remaining (ms)` (100–5000) — Only interrupt when the enemy cast has this much time left.
   - `Kick Channel Elapsed (ms)` (0–5000) — Only interrupt a channel after this much time has elapsed.
+  - The `SmartKick` / `SmartStun` lines interrupt casters that are **not** your target — see [Off-Target Kicks](#off-target-kicks-smartkick--smartstun) below.
 
 - **Dispels Tab:**
   - Six type checkboxes: `Magic`, `Poison`, `Disease`, `Curse`, `Bleed`, `Snare` — Toggle which debuff types to auto-dispel.
@@ -173,6 +179,69 @@ Some categories have extra controls at the top of their tab:
 ### Enable Checkbox
 
 Every category tab has an **"Enable [Category]"** checkbox at the top left. When **unchecked**, the entire category is skipped during execution — no spells from that category will fire.
+
+### Off-Target Kicks (SmartKick / SmartStun)
+
+Since September 2026 the Kicks tab also interrupts casters that are **not** your target. The normal kick lines only ever see your current target, so a caster standing next to it was never kicked.
+
+**How it works**
+
+1. A small Lua helper registered by the rotation scans the enemy nameplates every tick and reports whether a nameplate other than your target is casting something interruptible, and whether that caster stands within range of your kick. In Midnight the cast itself is a secret value for addons, but "is there a cast" and "is it in range" are readable.
+2. When the answer is yes and your kick is ready, the rotation presses the `SmartKick` macro:
+
+   ```
+   #showtooltip <Kick>
+   /cast [@focus,exists,nodead,harm] <Kick>
+   /stopmacro [@focus,exists,nodead,harm]
+   /focus target
+   /cleartarget
+   /targetenemy
+   /cast <Kick>
+   /target focus
+   /clearfocus
+   /startattack
+   ```
+
+   Your target is parked in focus, WoW's own tab targeting picks the caster, the kick goes out, your target comes back and the focus is cleared. Measured on a Havoc Demon Hunter: 14 kicks out of 20 presses, target restored 15 times out of 16. A miss costs nothing but the target swap — the kick's cooldown is not spent.
+3. `SmartStun` does the same with the class stun and sits below `SmartKick`, so it only fires while the kick is on cooldown. Around-the-character stuns get an extra off-target line where the kick range matches the stun radius.
+
+**What you need**
+
+- **Enemy nameplates shown** (Interface → Nameplates → *Show Enemy Nameplates*, default key `V`). Without nameplates the helper sees nothing and the lines never fire.
+- **An attackable target.** The Kicks tab does not run while you target a friendly unit.
+- **Existing profiles need one reset.** The lines are seed defaults, so after the update use *General → Reset to Defaults* once (or delete the profile folder) — see [Getting the Default Seeds Back](#getting-the-default-seeds-back).
+- **Healers opt in.** The macro clears the focus that the rotation uses for its heals and dispels, so on healer specs the lines stay off until you enable the loader checkbox **Off-target kick for healers (macro clears the focus)** (Load Rotation → Configure). Expect one extra focus switch after every off-target kick.
+
+**Per class**
+
+| Class | `SmartKick` wraps | `SmartStun` wraps | Off-target AoE stun line |
+|---|---|---|---|
+| Death Knight | Mind Freeze | Asphyxiate | — |
+| Demon Hunter | Disrupt | — | Chaos Nova, Void Nova (`EnemiesInMelee >= 3`) |
+| Druid | Solar Beam (Balance), Skull Bash (Feral, Guardian); Restoration has no kick | Mighty Bash | — |
+| Evoker | Quell | — | — |
+| Hunter | Counter Shot | Intimidation | — |
+| Mage | Counterspell | — | — |
+| Monk | Spear Hand Strike | — | Leg Sweep (`EnemiesInMelee >= 3`) |
+| Paladin | Rebuke | Hammer of Justice | Blinding Light (`EnemiesInMelee >= 3`) |
+| Priest | Silence (Shadow only) | — | — |
+| Rogue | Kick | Kidney Shot (needs 5 combo points) | — |
+| Shaman | Wind Shear | — | — |
+| Warlock | Command Demon (your pet's interrupt) | — | — |
+| Warrior | Pummel | Storm Bolt | — |
+
+**Conditions and the picker**
+
+- `OffTargetCasterNear` — a caster other than your target, within range of your kick. Every seeded line uses this one.
+- `OffTargetCaster` — the same at any distance, for your own lines.
+- `SmartKick` and `SmartStun` show up in the Kicks tab spell picker like any other spell, but they are macros: the rotation checks the wrapped spell's cooldown and usability before pressing, waits 1.5 s between presses, and never presses a macro your class or spec did not register.
+- In the DEBUG log a press shows as `[INFO] Firing off-target macro SmartKick [Kicks]`.
+
+**What it deliberately does not do**
+
+- Cursor stuns (Shadowfury, Capacitor Totem, the Sigils, Ursol's Vortex) keep their mouseover lines: reticle spells accept only `@cursor` and `@player`, the macro cannot aim them.
+- Cone stuns (Shockwave, Blinding Sleet, Dragon's Breath, Typhoon) stay bound to your target: the macro changes the target, not your facing.
+- Ranged classes: "in range" means your kick's range (30–40 yards), so their around-the-character stuns got no off-target line.
 
 ---
 
@@ -482,6 +551,8 @@ Unlike the commands above, these use the literal prefix `/legendary` — they be
 | `/legendary show` | Show it again. |
 | `/legendary toggle` | Hide if shown, show if hidden. |
 | `/legendary reset` | Move it back to the top of the screen and unhide it. |
+| `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. |
+| `/legendary aoe` | Same as clicking the **AoE** button: toggles SaveAOE (also accepts `saveaoe`). |
 
 **If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
 
@@ -655,6 +726,8 @@ Cast the spell Assisted Combat is highlighting
 | `CastingRemaining(unit) <= 800` | Cast time remaining in ms |
 | `IsChanneling(unit)` | Unit is channeling |
 | `IsInterruptable(unit)` | Unit's cast can be interrupted |
+| `OffTargetCaster` | An enemy nameplate other than your target is casting something interruptible (enemy nameplates must be shown). Drives the `SmartKick` / `SmartStun` lines in the Kicks tab: a macro that parks your target in focus, tab-targets, kicks, and takes your target back. Healers get it only with the loader checkbox "Off-target kick for healers", because the macro clears the focus |
+| `OffTargetCasterNear` | Same as `OffTargetCaster`, and the caster stands in range of your kick. The seeded `SmartKick`, `SmartStun` and the off-target AoE stun lines use this one, so a caster 40 yards away does not trigger them |
 
 ### Combat & Encounter
 
