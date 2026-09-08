@@ -269,6 +269,7 @@ Each category tab displays a **DataGridView** (spreadsheet-like table) with the 
 
 - **You cannot add or remove rows directly** — the grid is populated from seed defaults or loaded profiles.
 - **You can edit conditions** by clicking the Condition cell and typing a new expression.
+- **Target dropdown** (condition editor, bottom row, since September 2026): pick where the line casts — Target (default), Focus, Mouseover, Cursor (ground), Player or Player (ground). It writes the matching `CastOn(focus)`, `CastOn(mouseover)`, `Placement(@Cursor)`, `CastOn(player)` or `Placement(@Player)` fragment into the condition and removes the previous one. Unit arguments in the other rows stay as they are: a kick line switched to Mouseover still checks `IsInterruptable(target)` until you change that row's unit to `mouseover` as well. `CastOn(mouseover)` works in every class; the older `CastOnMouseover()` spelling is gone, reset the profile or change the line if you still have one.
 - **You can toggle Enabled/CD** checkboxes by clicking them.
 - **Changes auto-save** — every edit immediately writes to the config file.
 
@@ -551,7 +552,7 @@ Unlike the commands above, these use the literal prefix `/legendary` — they be
 | `/legendary show` | Show it again. |
 | `/legendary toggle` | Hide if shown, show if hidden. |
 | `/legendary reset` | Move it back to the top of the screen and unhide it. |
-| `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. |
+| `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. The window also follows the bot's own `/<addon> SaveCDs` and `SaveAOE` commands, so the buttons always show the real state. |
 | `/legendary aoe` | Same as clicking the **AoE** button: toggles SaveAOE (also accepts `saveaoe`). |
 
 **If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
