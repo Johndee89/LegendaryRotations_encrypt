@@ -253,7 +253,7 @@ Each category tab displays a **DataGridView** (spreadsheet-like table) with the 
 |--------|------|-------------|
 | **✓ (Enabled)** | Checkbox | Per-spell toggle. Uncheck to disable a single spell without deleting it. |
 | **Spell Name** | Text (read-only) | The spell or macro name (e.g., "Shadow Bolt", "TopTrinket"). |
-| **Item Name** | Text (Items tab only) | The in-game item name for consumable macros (e.g., "Algari Healing Potion"). |
+| **Item Name** | Text (Items tab only) | The in-game item name for consumable macros (e.g., "Concentrated Silvermoon Health Potion"). |
 | **Spell Order** | Number (read-only) | Execution priority. **Lower number = fires first.** Lines are evaluated top-to-bottom in priority order. |
 | **Condition** | Text (read-only) | The condition expression that must evaluate to `true` for this spell to fire. |
 | **CD** | Checkbox | Marks this spell as a **Major Cooldown**. Major CDs are subject to the SaveCDs toggle and Target Time-To-Die threshold. |
