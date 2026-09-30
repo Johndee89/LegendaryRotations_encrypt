@@ -616,13 +616,13 @@ Each tick runs two passes. The **supportive pass** goes first and deliberately r
 have no enemy target, so a healer can keep healing while targeting a friendly unit:
 
 ```
-Defensives → Items → Kicks → Dispels → Healing
+Defensives → Items → Kicks → Dispels → Racials → Utility → Healing
 ```
 
 If nothing fired there, the **main pass** runs:
 
 ```
-Defensives → Items → Kicks → Dispels → Racials → Healing → Utility →
+Defensives → Items → Kicks → Dispels → Racials → Utility → Healing →
 Damage_Opener → Damage_SingleTarget OR Damage_AoE
 ```
 
@@ -631,7 +631,7 @@ Two things change this order:
 - **Inside an Arena / rated PvP instance**, the `PvP` tab replaces the Dispels slot and becomes the
   **last** category — there is no fall-through into the damage tabs:
   ```
-  Defensives → Items → Kicks → Racials → PvP → Healing → Utility
+  Defensives → Items → Kicks → Racials → Utility → PvP → Healing
   ```
   The PvE damage tabs are skipped on purpose: they contain no Arena-safe targeting, so letting them
   run was causing erratic target behaviour.
@@ -644,7 +644,7 @@ true fires, and the engine then stops for that tick.
 ### Execution Priority (Assisted Highlight)
 
 ```
-Defensives → Items → Kicks → Dispels → Racials → Healing → Utility →
+Defensives → Items → Kicks → Dispels → Racials → Utility → Healing →
 Major CDs from Damage_Opener → Major CDs from Damage_ST/AoE →
 Cast the spell Assisted Combat is highlighting
 ```
