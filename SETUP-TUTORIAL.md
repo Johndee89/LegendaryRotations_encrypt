@@ -89,6 +89,8 @@ The General tab controls how the rotation behaves at a high level.
 | **HMI Top Most** | Keeps the HMI window on top of all other windows. | Off |
 | **Close HMI after 1 minute out of game** | Automatically closes the HMI window if no rotation tick has fired for 60 seconds (e.g., you stopped the bot). Config is saved before closing. | On |
 | **Major CD – Target Time To Die (s)** | If the target is estimated to die within this many seconds, major cooldowns are skipped to avoid waste. Set to `0` to disable. Range: 0–60. | 10 |
+| **Major CD – ignore time to die on raid bosses** | Raid bosses skip the time-to-die check, so cooldowns are used until the kill. Adds keep the check. | On |
+| **Major CD – in M+ wait until the pack is gathered** | In a dungeon, major cooldowns of the damage tabs wait until no more enemies have joined your target's pack for 2 seconds (at most 12 seconds into combat). | On |
 | **Reset to Defaults** | Resets ALL settings (general, timing, and rotation lines) back to factory defaults. Requires confirmation. | — |
 
 ---
@@ -414,6 +416,11 @@ The estimator works by:
 3. Dividing current HP by that rate to estimate seconds remaining.
 
 You can adjust or disable this in **General Tab → Major CD – Target Time To Die (s)**. Set to `0` to disable.
+
+Two exceptions, both based on how top players use their cooldowns in Warcraft Logs, and both switchable on the General tab:
+
+- **Raid bosses** ignore the time-to-die check (**Major CD – ignore time to die on raid bosses**, on by default). Top raiders press their cooldowns from the pull and on cooldown until the kill; holding one at the end of a boss only saves it for a pull that is minutes away. Adds in a raid still use the check.
+- **In Mythic+ the rotation waits until the pack is gathered** (**Major CD – in M+ wait until the pack is gathered**, on by default). At the start of a pull in a dungeon, the major cooldowns of the damage tabs wait while more enemies are still arriving around your target: they go out once the count has not grown for 2 seconds, and at the latest 12 seconds into combat. With a single enemy there is no wait. Top players open a big pack with their cooldowns about 10 seconds after they start attacking, once the tank has everything together.
 
 ### The "MajorCooldowns" Condition Keyword
 
