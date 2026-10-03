@@ -204,7 +204,7 @@ Since September 2026 the Kicks tab also interrupts casters that are **not** your
    /startattack
    ```
 
-   Your target is parked in focus, WoW's own tab targeting picks the caster, the kick goes out, your target comes back and the focus is cleared. Measured on a Havoc Demon Hunter: 14 kicks out of 20 presses, target restored 15 times out of 16. A miss costs nothing but the target swap — the kick's cooldown is not spent.
+   Your target is parked in focus, WoW's own tab targeting picks the caster, the kick goes out, your target comes back and the focus is cleared. Measured on a Havoc Demon Hunter: the kick went out on 14 of 20 presses and the target came back 15 times out of 16. That counts kicks sent, not interrupts: tab targeting does not know who is casting, so in a pack the kick can land on a mob that is not casting, and then its cooldown is spent. Only a press that finds no enemy in range costs nothing but the target swap. A Demonology log (Oct 2026) showed the other side of this: SmartKick had used the pet's Spell Lock right before most casts of the player's own target. If kicking your own target matters more to you than kicking the others, delete the `SmartKick` line from your Kicks tab.
 3. `SmartStun` does the same with the class stun and sits below `SmartKick`, so it only fires while the kick is on cooldown. Around-the-character stuns get an extra off-target line where the kick range matches the stun radius.
 
 **What you need**
