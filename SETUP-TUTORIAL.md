@@ -635,13 +635,15 @@ Damage_Opener → Damage_SingleTarget OR Damage_AoE
 
 Two things change this order:
 
-- **Inside an Arena / rated PvP instance**, the `PvP` tab replaces the Dispels slot and becomes the
-  **last** category — there is no fall-through into the damage tabs:
+- **In an arena or battleground, and in the open world with War Mode while your target is an enemy
+  player**, the `PvP` tab replaces the Dispels slot and becomes the **last** category — there is no
+  fall-through into the damage tabs:
   ```
   Defensives → Items → Kicks → Racials → Utility → PvP → Healing
   ```
   The PvE damage tabs are skipped on purpose: they contain no Arena-safe targeting, so letting them
-  run was causing erratic target behaviour.
+  run was causing erratic target behaviour. War Mode alone does not count: against NPCs you get the
+  normal tabs, AoE included.
 - **Healers with the group below 65% health** skip `Damage_Opener` and the damage tabs entirely, so
   a GCD is never spent on damage while someone is in danger.
 
