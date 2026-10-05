@@ -91,7 +91,7 @@ The General tab controls how the rotation behaves at a high level.
 | **Major CD – Target Time To Die (s)** | If the target is estimated to die within this many seconds, major cooldowns are skipped to avoid waste. Set to `0` to disable. Range: 0–60. | 10 |
 | **Major CD – ignore time to die on raid bosses** | Raid bosses skip the time-to-die check, so cooldowns are used until the kill. Adds keep the check. | On |
 | **Major CD – in M+ wait until the pack is gathered** | In a dungeon, major cooldowns of the damage tabs wait until no more enemies have joined your target's pack for 2 seconds (at most 12 seconds into combat). | On |
-| **Reset to Defaults** | Resets ALL settings (general, timing, and rotation lines) back to factory defaults. Requires confirmation. | — |
+| **Reset to Defaults** | Resets ALL settings (general, timing, and rotation lines) back to factory defaults and refills every tab with the default lines right away, no restart needed. Requires confirmation. | — |
 
 ---
 
@@ -387,6 +387,8 @@ Upgrade(Lightning Bolt)
 
 Any spell line with the **CD** checkbox checked is treated as a Major Cooldown. These are typically high-impact, long-cooldown abilities (e.g., Metamorphosis, Dark Soul, Bloodlust).
 
+The holds described below (SaveCDs, Target Time-To-Die, waiting for the pack) apply only to lines in the damage tabs (`Damage_Opener`, `Damage_SingleTarget`, `Damage_AoE`) and the `PvP` tab. A Major CD in Defensives, Healing, Utility or any other tab always fires when its condition is met, so an emergency button like Divine Shield or Guardian Spirit is never held back.
+
 ### SaveCDs Toggle
 
 In game, you can toggle cooldowns on/off using a slash command:
@@ -398,7 +400,7 @@ In game, you can toggle cooldowns on/off using a slash command:
 (Replace `xxxxx` with the first 5 lowercase letters of your addon name.)
 
 When **SaveCDs is ON** (cooldowns disabled):
-- All Major CD lines are **skipped** entirely.
+- All Major CD lines in the damage and PvP tabs are **skipped**.
 - The footer shows `Cooldowns: OFF` in red.
 - Useful for saving CDs for an upcoming boss phase or mechanic.
 
@@ -643,7 +645,9 @@ Two things change this order:
   ```
   The PvE damage tabs are skipped on purpose: they contain no Arena-safe targeting, so letting them
   run was causing erratic target behaviour. War Mode alone does not count: against NPCs you get the
-  normal tabs, AoE included.
+  normal tabs, AoE included. The pass that runs before the target check (healing while you target a
+  friend) uses the same order, so a healer's PvP tab comes before the PvE Healing tab, and automatic
+  dispels stay off in PvP.
 - **Healers with the group below 65% health** skip `Damage_Opener` and the damage tabs entirely, so
   a GCD is never spent on damage while someone is in danger.
 
