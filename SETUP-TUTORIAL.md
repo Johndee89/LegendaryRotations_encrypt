@@ -566,6 +566,24 @@ Unlike the commands above, these use the literal prefix `/legendary` — they be
 
 **If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
 
+### Healers: ramp key (Restoration Druid, Discipline, Preservation, Mistweaver)
+
+**Hold to ramp.** In the loader, under Class Setup, `<Spec> ramp: hold this key` picks a key (`-` by default, also `+` (the `=` key on US keyboards), mouse button 4 or 5, or `Off`). While you hold it, the rotation builds the spec's ramp on everyone in range, in combat and before the pull alike. Let go and the normal healing priority takes over again. The loader prints a line when the hold is recognized and when you release it.
+
+| Spec | While the key is held |
+|------|-----------------------|
+| Restoration Druid | Rejuvenation, then the Germination second stack, on everyone who lacks them. |
+| Discipline Priest | Atonement on everyone: Power Word: Shield and Flash Heal on players without it, Power Word: Radiance while many lack it, and in combat Evangelism (in a raid once 5 Atonements are out). |
+| Preservation Evoker | Temporal Anomaly, then Echo on everyone without one. Dream Breath, Reversion and Verdant Embrace wait while you hold, so letting go cashes the Echoes in. |
+| Mistweaver Monk | Thunder Focus Tea in combat, Renewing Mist on everyone without it, then Enveloping Mist (in a raid on 5 players at most). |
+
+- The bot reads the key itself, so it works without any macro. It only counts while WoW is the window in front and after about a quarter of a second of holding, so typing a `-` in chat or in Discord does not start a ramp.
+- The key still reaches WoW as well. `-` is action button 11 in WoW's default key bindings: unbind it there (Key Bindings, Action Bar), or pick another key, otherwise holding it also presses whatever sits in that slot.
+- Emergency heals and big cooldowns above the ramp lines still fire while you hold the key.
+- A changed key takes effect after restarting the rotation. Reset to Defaults (or delete your profile folder / `profile.json`) once, so the Healing and OOC tabs get the ramp key lines.
+
+**Restoration Druid ramp toggle.** `/<addon> ramp` (the first 5 letters of your addon name) switches the full ramp on: Innervate below 75% mana, Tree of Life, the Rejuvenation blanket, Swiftmend, a Soul of the Forest Regrowth and Wild Growth, after which it switches itself off. In a raid it also starts on its own about 10 seconds before a healer boss timer.
+
 ### Spell Queue — `/lq`
 
 The rotation includes a built-in spell queue system for on-demand spell casting.
