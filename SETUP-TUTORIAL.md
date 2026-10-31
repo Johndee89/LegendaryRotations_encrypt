@@ -732,6 +732,8 @@ Cast the spell Assisted Combat is highlighting
 
 **Power Type Indices:** 0=Mana, 1=Rage, 2=Focus, 3=Energy, 4=ComboPoints, 5=Runes, 6=RunicPower, 7=SoulShards, 8=LunarPower, 9=HolyPower, 11=Maelstrom, 12=Chi, 13=Insanity, 16=ArcaneCharges, 17=Fury, 18=Pain, 19=Essence
 
+Rage and Runic Power use the 0 to 100 scale you see in game: `Power(player,6) >= 80` means 80 Runic Power.
+
 ### Buffs & Debuffs
 
 | Condition | Description |
