@@ -771,6 +771,7 @@ Rage and Runic Power use the 0 to 100 scale you see in game: `Power(player,6) >=
 | `CombatTime < 8000` | Time since combat started (ms) |
 | `IsBoss(target)` | Target is a boss |
 | `IsLusted()` | Bloodlust/Heroism is active or sated |
+| `RecentMajorCooldown(3000)` | A burst cooldown (CD box, damage or Healing tab) went out within the last N ms |
 | `TargetIsEnemy` | Target can be attacked |
 | `IsPlayerMoving` | Player is currently moving |
 | `IsMovingFor(VALUE)` | True when player has been moving for at least VALUE ms |
