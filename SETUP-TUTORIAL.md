@@ -170,6 +170,7 @@ Some categories have extra controls at the top of their tab:
 - **Kicks Tab:**
   - `Kick Cast Remaining (ms)` (100–5000) — Only interrupt when the enemy cast has this much time left.
   - `Kick Channel Elapsed (ms)` (0–5000) — Only interrupt a channel after this much time has elapsed.
+  - The kick lines read these two fields through the variables `KickCastMs` and `KickChannelMs` (`CastingRemaining(target) <= KickCastMs`, `ChannelElapsed(target) >= KickChannelMs`), so changing a field takes effect at once in every line that uses them. In the condition editor they are the entries `CastingRemaining(UNIT) OP KickCastMs` and `ChannelElapsed(UNIT) OP KickChannelMs`. An offset works too: the Warlock's Mortal Coil line uses `KickCastMs-300`. Profiles built before November 2026 still carry fixed numbers in these lines; Reset to Defaults switches them to the variables.
   - The `SmartKick` / `SmartStun` lines interrupt casters that are **not** your target — see [Off-Target Kicks](#off-target-kicks-smartkick--smartstun) below.
 
 - **Dispels Tab:**
@@ -759,6 +760,7 @@ Rage, Runic Power, Astral Power and Insanity use the 0 to 100 scale you see in g
 | `SpellInRange(Name,unit)` | True if the spell is in range of the unit |
 | `CastingID(unit) == 12345` | Specific spell being cast by unit |
 | `CastingRemaining(unit) <= 800` | Cast time remaining in ms |
+| `CastingRemaining(unit) <= KickCastMs` | Same, against the Kicks tab field "Kick Cast when Remaining"; `ChannelElapsed(unit) >= KickChannelMs` reads "Kick Channel when Elapsed". `+N` / `-N` adds an offset |
 | `IsChanneling(unit)` | Unit is channeling |
 | `IsInterruptable(unit)` | Unit's cast can be interrupted |
 | `OffTargetCaster` | An enemy nameplate other than your target is casting something interruptible (enemy nameplates must be shown). Drives the `SmartKick` / `SmartStun` lines in the Kicks tab: a macro that parks your target in focus, tab-targets, kicks, and takes your target back. Healers get it only with the loader checkbox "Off-target kick for healers", because the macro clears the focus |
