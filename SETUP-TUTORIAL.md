@@ -256,7 +256,7 @@ Each category tab displays a **DataGridView** (spreadsheet-like table) with the 
 |--------|------|-------------|
 | **✓ (Enabled)** | Checkbox | Per-spell toggle. Uncheck to disable a single spell without deleting it. |
 | **Spell Name** | Text (read-only) | The spell or macro name (e.g., "Shadow Bolt", "TopTrinket"). |
-| **Item Name** | Text (Items tab only) | The in-game item name for consumable macros (e.g., "Concentrated Silvermoon Health Potion"). |
+| **Item Name** | Text (Items tab only) | The in-game item name for consumable macros (e.g., "Concentrated Silvermoon Health Potion"). The game macro is written when the rotation starts, so a change takes effect at the next start; the loader says so once. |
 | **Spell Order** | Number (read-only) | Execution priority. **Lower number = fires first.** Lines are evaluated top-to-bottom in priority order. |
 | **Condition** | Text (read-only) | The condition expression that must evaluate to `true` for this spell to fire. |
 | **CD** | Checkbox | Marks this spell as a **Major Cooldown**. Major CDs are subject to the SaveCDs toggle and Target Time-To-Die threshold. |
@@ -598,8 +598,12 @@ The rotation includes a built-in spell queue system for on-demand spell casting.
 | `focus` | Cast on your focus target |
 | `mouseover` | Cast on your mouseover target |
 | `cursor` | Place ground-targeted ability at your cursor |
+| `player` | Cast on yourself |
+| `target` | Cast on your current target |
 
-**Example:** `/lq focus Misdirection` queues Misdirection to be cast on your focus target on the next available tick.
+**Example:** `/lq focus Misdirection` queues Misdirection to be cast on your focus target as soon as it can be cast.
+
+A queued spell waits at the front of the queue until the game reports the cast, for at most 10 seconds; if it could not be cast by then, the chat says `Queue expired`. Several `/lq` lines queue up and go out one after another.
 
 Available queue spells are class-specific — each rotation registers its own set of queueable abilities (e.g., interrupts on focus, ground-targeted traps at cursor, utility on mouseover).
 
