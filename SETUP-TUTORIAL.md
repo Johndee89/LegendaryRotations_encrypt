@@ -564,6 +564,7 @@ Unlike the commands above, these use the literal prefix `/legendary` — they be
 | `/legendary reset` | Move it back to the top of the screen and unhide it. |
 | `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. **Use `/legendary cds` and `/legendary aoe` instead of the bot's own `/<addon> SaveCDs` / `SaveAOE`:** they toggle the same command and keep the window in step. The HMI footer (`Cooldowns: ON/OFF`) always shows the real state. The window's position is stored in a character macro named `LegendaryUI`; leave it alone. |
 | `/legendary aoe` | Same as clicking the **AoE** button: toggles SaveAOE (also accepts `saveaoe`). |
+| `/legendary funnel` | Rogue, Subtlety: focus one target inside a pack. The rotation plays its single target finishers on your target and builds combo points with Shuriken Storm only, whatever the enemy count. Type it again to switch back. The loader says `[Funnel] ON` / `OFF`. Handy as a keybind macro. |
 
 **If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
 
