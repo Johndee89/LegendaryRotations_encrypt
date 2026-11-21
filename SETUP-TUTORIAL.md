@@ -4,7 +4,9 @@
 
 The **HMI** (Human–Machine Interface) is a configuration window that opens alongside your rotation — think of it like **Hekili**, but with full control over every spell, condition, and priority. Where Hekili shows you *what* to press next, the Legendary HMI lets you define *how* the rotation decides what to press, with a familiar grid-based editor for spell priorities, conditions, cooldown management, timing delays, and profiles.
 
-> **Auto-Close Behavior:** By default, the HMI automatically closes itself if no rotation tick has fired for **60 seconds** (e.g., you stopped the bot, logged out, or disconnected). This is normal — it saves your config before closing. You can disable this via the **"Close HMI after 1 minute out of game"** checkbox on the General tab.
+Legendary Rotations run in **two Inferno loaders**: the old one and the new one (loader 2.0, November 2026). The HMI is the same in both: same tabs, same grid, same conditions, same profiles. Only the window looks different, and a few loader steps differ; this tutorial says where.
+
+> **Auto-Close Behavior:** In the new loader the HMI closes when you stop the bot and opens again at the next start. In the old loader it closes itself if no rotation tick has fired for **60 seconds** (e.g., you stopped the bot, logged out, or disconnected). Both save your config before closing. You can switch the 60 second close off with the **"Close HMI after 1 minute out of game"** checkbox on the General tab.
 
 ---
 
@@ -24,25 +26,56 @@ The **HMI** (Human–Machine Interface) is a configuration window that opens alo
 12. [Assisted Highlight Mode vs Full Auto](#12-assisted-highlight-mode-vs-full-auto)
 13. [Tips & Best Practices](#13-tips--best-practices)
 14. [Condition Reference Sheet](#14-condition-reference-sheet)
+15. [Logs for a Ticket](#15-logs-for-a-ticket)
 
 ---
 
 ## 1. First Launch & Initial Setup
 
+### Which Loader?
+
+| Game version | Loader | Rotation to pick |
+|---|---|---|
+| Retail | old or new | old: `Legendary_Retail_<YourClass>_HMI` (or `Legendary_Retail_OneButton`) · new: `Legendary <YourClass> Retail` |
+| Classic Era, TBC, MoP | old only | `Legendary_ClassicEra_Vanilla_HMI`, `Legendary_ClassicEra_TBC_HMI`, or the `Legendary_ClassicMoP` rotation for your class |
+| Forever | new only | `Legendary <YourClass> Forever` |
+
+The old loader is still supported for some months.
+
 ### Prerequisites
 
-- **Inferno Bot** installed and running.
-- A **rotation .cs file** for your class placed in the correct Inferno rotation folder.
+- **The Inferno loader** installed (old, new, or both).
+- **The Legendary Updater**, which downloads the rotations and puts them into the right loader folder: https://github.com/xkaneto/LegendaryUpdater/releases/latest. Version 1.2.0 or newer has two folder rows at the top (old loader, new loader; each is the folder of that loader with `InfernoWow.exe` in it) and a button per loader and game version. Run it from a folder that is not inside OneDrive.
+- **Windows HDR off** (Windows Settings → System → Display). With HDR on, the new loader only reports `No addon signal`.
+- **WoW in fullscreen.** In window mode the bot can misread what the game shows and the rotation behaves strangely.
 
-### Start-Up Sequence
+### Start-Up Sequence — New Loader
 
-1. **Start Inferno Loader before b.net and WoW.** 
+1. Start the new Inferno loader.
+2. In the **ROTATION** list, pick `Legendary <YourClass> Retail` or `Legendary <YourClass> Forever` (shown "by Legendary"). Just updated? Click **Refresh List** first.
+3. Our loader settings (race, game client language, class options) are in the **Rotation Settings** tab of the loader.
+4. Click **START**. A pop-up asks for your **specialization**: pick it there.
+5. Log into WoW. If the loader says the addon in game is from another rotation, type `/reload`.
+6. The **HMI window** opens once the rotation initializes.
+
+### Start-Up Sequence — Old Loader
+
+1. **Start the Inferno loader before b.net and WoW.**
 2. Log into World of Warcraft.
-3. Select your rotation file, and click Start.
+3. Select your rotation and click **LOAD**, set your specialization under **CONFIGURE**, then click **START ROTATION**.
 4. Type `/reload` in the game chat. This loads the bot's internal macros and keybinds automatically.
 5. The **HMI window** opens automatically once the rotation initializes.
 
 > **Important:** The bot reserves `Numpad 0-9`, `F1-F12`, `[`, and `]` keys internally. Do **not** bind those to anything in WoW.
+
+### Your HWID and the License
+
+Licenses are bound to the HWID. **The new loader has its own HWID**, different from the old loader's.
+
+- **New loader:** click the **person icon** at the top right. In the Account window the HWID is the line **Rotation HWID** (a click copies it). Do not use the Key or the Inferno ID lines, and never post your key. Our rotation also prints the HWID as `Your HWID is: ...` in the loader's Console when it loads.
+- **Old loader:** the log on the right shows `Your HWID is:` followed by 32 characters. The `Your Inferno ID` line below it is something else.
+
+In `#talk-to-the-bot-here` on our Discord: `!trial` for a trial, `!activate` with the order ID from the shop, `!reset` with the new HWID when you change PC or loader. Playing on both loaders? Send `!reset` with the HWID of the loader you use whenever you switch. When the license is active the rotation says so when it loads (new loader: `You have a valid License`); without it, it does not cast.
 
 ### Spellbook Limit
 
@@ -50,13 +83,18 @@ The Inferno API has a **50-slot spellbook limit**. The rotation automatically re
 
 ### Macro Limit and Raid Focus Macros
 
-Macros are capped at **87 per spec**. Every `@focus`, `@cursor`, `@player` and `@mouseover` spell the rotation can dispatch costs one slot, and so does every custom line you add with such a directive. The **raid focus macros** (`focusraid1` .. `focusraid30`, the ones that let heals and dispels reach raid members) are registered last and take whatever is left, up to 30. There is no checkbox for them any more; the loader prints `[HMI] Raid focus macros: 30/30` at start, and a lower number tells you the slots ran out (remove custom lines you do not use). Healer specs ship with 3 to 12 slots to spare after the full 30.
+Macros are capped at **87 per spec**, in both loaders (the new loader puts the macros past the first 47 on the numpad keys and switches NumLock on by itself). Every `@focus`, `@cursor`, `@player` and `@mouseover` spell the rotation can dispatch costs one slot, and so does every custom line you add with such a directive. The **raid focus macros** (`focusraid1` .. `focusraid30`, the ones that let heals and dispels reach raid members) are registered last and take whatever is left, up to 30. There is no checkbox for them any more; the loader prints `[HMI] Raid focus macros: 30/30` at start, and a lower number tells you the slots ran out (remove custom lines you do not use). Healer specs ship with 3 to 12 slots to spare after the full 30.
 
 ---
 
 ## 2. HMI Window Overview
 
-The HMI opens as a resizable WinForms window (default 900×700 pixels, minimum 600×400).
+The window has two looks, one per loader:
+
+- **New loader:** a dark window with a rail on the left instead of tabs: **General**, **Timing**, **Support** (OOC, Kicks, Defensives, Items, Dispels, Racials, Healing, Utility, PvP), **Rotation** (Opener, Single Target, AoE, and Leveling in Forever), **Spell Lists**, **Profiles**. Every category shows its line count and a dot: filled = it runs, ring = switched on but empty, grey ring = switched off. Below the line grid, a strip shows the whole condition of the selected line.
+- **Old loader:** a resizable window (default 900×700 pixels, minimum 600×400) with the tabs below; the categories are sub-tabs of **Rotation**.
+
+The colours follow the game version: Retail in Midnight colours (night blue with gold), Classic Era and Forever in brown with legendary orange, TBC in fel green, MoP in petrol and jade.
 
 ### Main Tabs
 
@@ -70,7 +108,7 @@ The HMI opens as a resizable WinForms window (default 900×700 pixels, minimum 6
 
 ### Footer Bar
 
-At the bottom of the **General tab** you'll find:
+At the bottom of the **General tab** (in the new loader's window: at the bottom of every page, together with a status line and the active profile) you'll find:
 
 - **Pause Button** — Shows `▶ ROTATION ACTIVE` (green) or `⏸ ROTATION PAUSED` (red). Click to pause/resume.
 - **Cooldown Status** — Shows `Cooldowns: ON` (green) or `Cooldowns: OFF` (red), reflecting the in-game SaveCDs toggle state.
@@ -150,6 +188,7 @@ The **Rotation** tab is where the real customization happens. It contains multip
 | **Healing** | Healing spells (primarily for healer specs) |
 | **Utility** | Utility spells (movement, crowd control) |
 | **PvP** | PvP-specific abilities (class-specific — only present for some classes) |
+| **Damage_Leveling** | Forever only: the leveling rotation. Runs before Opener, Single Target and AoE while your level is at most the **Up to level** value; above it the endgame tabs take over by themselves |
 | **Damage_Opener** | Opener/burst sequence (executed first in combat) |
 | **Damage_SingleTarget** | Single-target damage rotation |
 | **Damage_AoE** | AoE damage rotation (activated when enemy count ≥ AoE threshold) |
@@ -157,6 +196,10 @@ The **Rotation** tab is where the real customization happens. It contains multip
 ### Category-Specific Controls
 
 Some categories have extra controls at the top of their tab:
+
+- **Leveling Tab (Forever):**
+  - `Up to level` (1–60, default 60) — the tab runs while your character's level is at or below this value. Set it lower if you want the endgame rotation earlier. Every spec has its own single target and AoE leveling lines; a healer whose group needs healing skips them like the damage tabs.
+  - Profiles from before this tab get it filled at the next start of the rotation.
 
 - **Damage_AoE Tab:**
   - `AoE Threshold` (1–10) — Minimum number of enemies required to switch to AoE rotation.
@@ -263,15 +306,16 @@ Each category tab displays a **DataGridView** (spreadsheet-like table) with the 
 
 ### How the Grid Works
 
-1. Every combat tick (~100ms), the engine iterates through enabled categories.
+1. Every combat tick (about every 30 ms in the old loader, 50 ms in the new one), the engine iterates through enabled categories.
 2. Within each category, spell lines are sorted by **Spell Order** (ascending).
 3. For each line: if **Enabled** is checked, the **Condition** evaluates to true, and the spell can be cast (off cooldown, in range, etc.), the spell fires.
 4. After a spell fires, the engine moves to the next category (cascade behavior).
 
 ### Editing Spells
 
-- **You cannot add or remove rows directly** — the grid is populated from seed defaults or loaded profiles.
-- **You can edit conditions** by clicking the Condition cell and typing a new expression.
+- **Add Line** adds a spell to the tab (pick it from the list; it goes to the bottom), **Remove** deletes the selected line, **▲ Move Up** / **▼ Move Down** change its priority. Both windows have these buttons.
+- **New loader's window only:** after **Remove**, the status line offers **Undo** for 10 seconds (the line comes back at its old priority). Keys in the grid: `Enter` or `F2` edit, `Del` removes, `Alt+Up` / `Alt+Down` move, `Ctrl+N` or `Insert` adds. A double click on a line opens the condition editor.
+- **You can edit conditions** in the condition editor (click the Condition cell or **Edit**).
 - **Target dropdown** (condition editor, bottom row, since September 2026): pick where the line casts — Target (default), Focus, Mouseover, Cursor (ground), Player or Player (ground). It writes the matching `CastOn(focus)`, `CastOn(mouseover)`, `Placement(@Cursor)`, `CastOn(player)` or `Placement(@Player)` fragment into the condition and removes the previous one. Unit arguments in the other rows stay as they are: a kick line switched to Mouseover still checks `IsInterruptable(target)` until you change that row's unit to `mouseover` as well. `CastOn(mouseover)` works in every class; the older `CastOnMouseover()` spelling is gone, reset the profile or change the line if you still have one.
 - **You can toggle Enabled/CD** checkboxes by clicking them.
 - **Changes auto-save** — every edit immediately writes to the config file.
@@ -351,6 +395,9 @@ CombatTime < 8000
 # Boss only: Cast only on bosses
 IsBoss(target)
 
+# Forever leveling: only from character level 20 on
+PlayerLevel >= 20
+
 # Group healing: cast once 3 or more members are at or below 85% health
 # (GroupHealthCount is the same condition under a name that says so)
 GroupHealthCount(85, 3, HealingSpell)
@@ -388,7 +435,7 @@ Upgrade(Lightning Bolt)
 
 Any spell line with the **CD** checkbox checked is treated as a Major Cooldown. These are typically high-impact, long-cooldown abilities (e.g., Metamorphosis, Dark Soul, Bloodlust).
 
-The holds described below (SaveCDs, Target Time-To-Die, waiting for the pack) apply only to lines in the damage tabs (`Damage_Opener`, `Damage_SingleTarget`, `Damage_AoE`) and the `PvP` tab. A Major CD in Defensives, Healing, Utility or any other tab always fires when its condition is met, so an emergency button like Divine Shield or Guardian Spirit is never held back.
+The holds described below apply to Major CD lines in the damage tabs (`Damage_Leveling`, `Damage_Opener`, `Damage_SingleTarget`, `Damage_AoE`), the `Items` tab and the `PvP` tab. **SaveCDs** (the **CDs** button) also holds the Major CD lines of the `Healing` tab, and for healer specs those of the `Utility` tab, so a healer can keep the big cooldowns for later. The automatic holds (Target Time-To-Die, waiting for the pack) never touch Healing or Utility, and nothing ever holds the `Defensives` tab, so an emergency button like Divine Shield or Guardian Spirit is never held back.
 
 ### SaveCDs Toggle
 
@@ -437,10 +484,13 @@ Profiles let you store multiple rotation configurations and switch between them.
 
 ### Profile Storage
 
-Profiles are stored on disk in:
+Profiles are stored in the folder of the loader you play with (the one with `InfernoWow.exe`), in:
 ```
 Legendary_HMI_Profiles/Retail_{Class}_{Spec}_{ProfileName}/
+Legendary_HMI_Profiles/Forever_{Class}_{Spec}_{ProfileName}/
 ```
+
+The old and the new loader each keep their own profiles. To take a profile across, **Export** it in one loader's HMI and **Import** it in the other.
 
 Each profile folder contains:
 - `config.json` — All rotation settings, spell lines, conditions, and toggles.
@@ -517,7 +567,7 @@ a delta, our updates keep landing and your own changes ride on top.
 
 Two consequences worth knowing:
 
-- **Your edits are shared across every class, spec and profile.** They live in a single file, `Legendary_HMI_Profiles/spell-lists.json`, next to the profile folders rather than inside one. The lists are the same in all rotations, so a correction is made once and applies everywhere.
+- **Your edits are shared across every class, spec and profile.** They live in a single file, `Legendary_HMI_Profiles/spell-lists.json`, next to the profile folders rather than inside one (Forever keeps its own `spell-lists-forever.json`, because its spell IDs can differ from Retail's). The lists are the same in all rotations, so a correction is made once and applies everywhere.
 - **Reset to Defaults does not clear them.** That button rebuilds the spell grid. To undo spell-list edits use **Reset This List**, or delete `spell-lists.json`.
 
 ### Before you add an ID
@@ -552,7 +602,7 @@ All slash commands start with the **first 5 lowercase letters of your addon name
 
 ### The In-Game LEGENDARY Window
 
-The rotation draws a small window in-game with **Rotation**, **AoE** and **CDs** buttons, so you can flip those without alt-tabbing to the HMI. Drag it by its body to move it; the position is remembered between sessions.
+The rotation draws a small window in-game with **Rotation**, **AoE**, **CDs** and **OOC** buttons, so you can flip those without alt-tabbing to the HMI. **OOC** holds the out of combat rotation (buffs, pre-pull lines) while it reads OFF. Drag the window by its body to move it; the position is remembered between sessions. It is there in Retail, Classic Era, TBC (the all-in-one rotation) and Forever.
 
 Unlike the commands above, these use the literal prefix `/legendary` — they belong to the window, not to a specific rotation.
 
@@ -564,9 +614,19 @@ Unlike the commands above, these use the literal prefix `/legendary` — they be
 | `/legendary reset` | Move it back to the top of the screen and unhide it. |
 | `/legendary cds` | Same as clicking the **CDs** button: toggles SaveCDs (also accepts `savecds`). Handy as a keybind macro. **Use `/legendary cds` and `/legendary aoe` instead of the bot's own `/<addon> SaveCDs` / `SaveAOE`:** they toggle the same command and keep the window in step. The HMI footer (`Cooldowns: ON/OFF`) always shows the real state. The window's position is stored in a character macro named `LegendaryUI`; leave it alone. |
 | `/legendary aoe` | Same as clicking the **AoE** button: toggles SaveAOE (also accepts `saveaoe`). |
+| `/legendary ooc` | Same as clicking the **OOC** button (also accepts `saveooc`). |
 | `/legendary funnel` | Rogue, Subtlety: focus one target inside a pack. The rotation plays its single target finishers on your target and builds combo points with Shuriken Storm only, whatever the enemy count. Type it again to switch back. The loader says `[Funnel] ON` / `OFF`. Handy as a keybind macro. |
 
 **If you lose the window** — dragged under your bags, or off the edge of the screen — use `/legendary reset`. Its position is stored in a macro named `LegendaryUI`, so before this command existed the only way back was deleting that macro by hand.
+
+### The In-Game Settings Window
+
+Most of the HMI is also available inside WoW: click the orange **L** on your minimap or type `/legpanel`. It is there in Retail, Classic Era, TBC (the all-in-one rotation) and Forever.
+
+- **Left tabs:** General, Support (OOC, Kicks, Defensives, Items, Dispels, Racials, Utility, PvP; Healing as its own tab for healer classes), Rotation (Opener, Single Target, AoE, and Leveling in Forever), and in Retail a **Potions** tab where you pick your combat, health and mana potion and when to drink them.
+- **Every line** has a switch, its CD box and the numbers of its condition, which you can type into. The **...** menu of a line moves it up or down, adds a line below it, opens the condition editor, or deletes it (second click to confirm). **+ Add line** at the bottom adds a spell to the page.
+- **General → Window size** scales this window and the LEGENDARY window from 100 to 300 %, for big screens and TVs.
+- Changes apply at once and are saved about 2 seconds later; an open HMI window follows. A change made in the HMI reaches the in-game window at the next start of the rotation.
 
 ### Healers: ramp key (Restoration Druid, Discipline, Preservation, Mistweaver)
 
@@ -778,6 +838,7 @@ Rage, Runic Power, Astral Power and Insanity use the 0 to 100 scale you see in g
 | `InCombat(player)` | Player is in combat |
 | `CombatTime < 8000` | Time since combat started (ms) |
 | `IsBoss(target)` | Target is a boss |
+| `PlayerLevel >= 20` | Your character's level (Forever). False while the level cannot be read |
 | `IsLusted()` | Bloodlust/Heroism is active or sated |
 | `RecentMajorCooldown(3000)` | A burst cooldown (CD box, damage or Healing tab) went out within the last N ms |
 | `TargetIsEnemy` | Target can be attacked |
@@ -859,7 +920,35 @@ These always return `true` but set up targeting for the spell:
 
 ---
 
+## 15. Logs for a Ticket
+
+When something does not work as expected, a log of the situation lets us see what the rotation decided and why. Send it in your ticket together with class, spec and what happened.
+
+**New loader**
+
+1. Click **Developer Mode** in the loader and set the debug level to **Simple**. There is no DEBUG checkbox in the rotation's settings any more; this debug level switches the rotation's log on and off.
+2. Play the situation (a few pulls are enough).
+3. Click **Open the Logs folder** and send `runtime.log`. A session you already closed is the file `runtime-<date>-<time>.log`.
+
+**Old loader**
+
+1. In the rotation's loader settings (**CONFIGURE**), tick **DEBUG Mode: ON**, then start the rotation again.
+2. Play the situation.
+3. In the folder of your loader (the one with `InfernoWow.exe`), open `Rotations\Legendary_Logs\` and send the file of that session: Retail writes one file per rotation start (`<date>_<time>_<rotation>.txt`), Classic one per hour (`<rotation>_<date>_<hour>h_log.txt`).
+
+---
+
 ## Quick-Start Checklist
+
+**New loader (Retail, Forever)**
+
+- [ ] Windows HDR off, WoW in fullscreen
+- [ ] Legendary Updater: **New loader folder** set, **Update Retail Rotations** or **Update Forever Rotations** clicked
+- [ ] Loader: pick `Legendary <YourClass> Retail` / `Forever` (Refresh List after an update), check the **Rotation Settings** tab
+- [ ] **START**, pick your spec in the pop-up, log into WoW (`/reload` if the loader asks)
+- [ ] HWID from the Account window (person icon, **Rotation HWID**) → `!trial`, `!activate` or `!reset` in `#talk-to-the-bot-here`
+
+**Old loader (Retail, Classic Era, TBC, MoP)**
 
 - [ ] Start the Inferno loader **before** logging in
 - [ ] Log into the game
@@ -867,14 +956,17 @@ These always return `true` but set up targeting for the spell:
 - [ ] You will get "Addon Mismatch" from the loader
 - [ ] Type `/reload` in chat
 - [ ] The rotation should work now
+
+**Then, in either loader**
+
 - [ ] Review the **General** tab settings
 - [ ] Go to the **Rotation** tab and browse each category's spells
 - [ ] Adjust **Timing** tab delays to taste
 - [ ] Test on a training dummy
 - [ ] Customize conditions as needed
 - [ ] Save your configuration as a new **Profile**
-- [ ] Learn the `/legen toggle` and `/legen SaveCDs` slash commands
+- [ ] Learn `/legendary cds`, `/legendary aoe` and `/legpanel` (the in-game settings window)
 
 ---
 
-*Last updated: June 2025*
+*Last updated: November 2026*
