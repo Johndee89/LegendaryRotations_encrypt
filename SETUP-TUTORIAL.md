@@ -52,11 +52,12 @@ The old loader is still supported for some months.
 ### Start-Up Sequence — New Loader
 
 1. Start the new Inferno loader.
-2. In the **ROTATION** list, pick `Legendary <YourClass> Retail` or `Legendary <YourClass> Forever` (shown "by Legendary"). Just updated? Click **Refresh List** first.
-3. Our loader settings (race, game client language, class options) are in the **Rotation Settings** tab of the loader.
-4. Click **START**. A pop-up asks for your **specialization**: pick it there.
-5. Log into WoW. If the loader says the addon in game is from another rotation, type `/reload`.
-6. The **HMI window** opens once the rotation initializes.
+2. Click the **gear icon** (Options) → **Game** → **Game Version** and pick **Retail** or **Forever (Classic+)**. The rotation list only shows the rotations of the game version set here. The same dialog has the loader language (Interface → Language), the WoW directory and the addon name (Paths), the spell queue option "Sync with game" (Game) and the Input Driver.
+3. In the **ROTATION** list, pick `Legendary <YourClass> Retail` or `Legendary <YourClass> Forever` (shown "by Legendary" with the game version, for example "by Legendary · Forever (Classic+)"). Just updated? Click **Refresh List** first.
+4. Our loader settings (race, game client language, class options) are in the **Rotation Settings** tab of the loader.
+5. Click **START**. A pop-up asks for your **specialization**: pick it there.
+6. Log into WoW. If the loader says the addon in game is from another rotation, type `/reload`.
+7. The **HMI window** opens once the rotation initializes.
 
 ### Start-Up Sequence — Old Loader
 
@@ -944,6 +945,7 @@ When something does not work as expected, a log of the situation lets us see wha
 
 - [ ] Windows HDR off, WoW in fullscreen
 - [ ] Legendary Updater: **New loader folder** set, **Update Retail Rotations** or **Update Forever Rotations** clicked
+- [ ] Loader: gear icon → Game → **Game Version** set to Retail or Forever (Classic+)
 - [ ] Loader: pick `Legendary <YourClass> Retail` / `Forever` (Refresh List after an update), check the **Rotation Settings** tab
 - [ ] **START**, pick your spec in the pop-up, log into WoW (`/reload` if the loader asks)
 - [ ] HWID from the Account window (person icon, **Rotation HWID**) → `!trial`, `!activate` or `!reset` in `#talk-to-the-bot-here`
